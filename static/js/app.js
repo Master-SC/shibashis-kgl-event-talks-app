@@ -94,6 +94,22 @@ function setupEventListeners() {
     });
 
     // Floating selection bar operations
+// Reset Filters & Search button
+const resetFiltersBtn = document.getElementById('reset-filters-btn');
+if (resetFiltersBtn) {
+    resetFiltersBtn.addEventListener('click', () => {
+        // Reset search
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearchBtn.style.display = 'none';
+        // Reset filter to 'all'
+        activeFilter = 'all';
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.classList.toggle('active', pill.dataset.type === 'all');
+        });
+        renderUpdates();
+    });
+}
     clearSelectionBtn.addEventListener('click', clearSelection);
     tweetSelectedBtn.addEventListener('click', openComposerForSelected);
 

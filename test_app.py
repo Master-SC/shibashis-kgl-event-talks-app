@@ -85,5 +85,12 @@ class BigQueryReleasesAppTestCase(unittest.TestCase):
         self.assertIn('error', data)
         self.assertEqual(data['error'], "Connection timed out to feed source")
 
+    def test_clear_filters_button_present(self):
+        """Check that the Clear Filters & Search button exists in the empty state."""
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        html_content = response.data.decode('utf-8')
+        self.assertIn('id="reset-filters-btn"', html_content)
+
 if __name__ == '__main__':
     unittest.main()
