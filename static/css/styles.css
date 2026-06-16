@@ -1209,3 +1209,222 @@ body {
         font-size: 0.8rem;
     }
 }
+
+/* Theme Toggle Styling */
+.theme-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    width: fit-content;
+    margin-top: 10px;
+}
+
+.theme-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .4s;
+    border-radius: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.theme-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-primary);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .theme-slider {
+    background-color: var(--accent-blue);
+}
+
+input:checked + .theme-slider:before {
+    transform: translateX(20px);
+}
+
+/* Light Mode Variable Overrides */
+body.light-mode {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #f1f5f9;
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --bg-card-hover: rgba(255, 255, 255, 0.95);
+    
+    --border-color: rgba(0, 0, 0, 0.08);
+    --border-hover: rgba(0, 0, 0, 0.16);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    
+    --accent-blue: #2563eb;
+    --accent-blue-glow: rgba(37, 99, 235, 0.15);
+    --accent-purple: #7c3aed;
+    --accent-purple-glow: rgba(124, 58, 237, 0.15);
+    --accent-cyan: #0891b2;
+    
+    /* Category Colors tweaked for light background contrast */
+    --color-feature: #059669;
+    --color-feature-bg: rgba(5, 150, 105, 0.08);
+    --color-feature-border: rgba(5, 150, 105, 0.2);
+    
+    --color-change: #2563eb;
+    --color-change-bg: rgba(37, 99, 235, 0.08);
+    --color-change-border: rgba(37, 99, 235, 0.2);
+    
+    --color-issue: #e11d48;
+    --color-issue-bg: rgba(225, 29, 72, 0.08);
+    --color-issue-border: rgba(225, 29, 72, 0.2);
+    
+    --color-deprecated: #d97706;
+    --color-deprecated-bg: rgba(217, 119, 6, 0.08);
+    --color-deprecated-border: rgba(217, 119, 6, 0.2);
+}
+
+/* Light Mode Style Overrides */
+body.light-mode .glow-orb {
+    opacity: 0.12;
+}
+
+body.light-mode .logo-text h1 {
+    background: linear-gradient(135deg, #0f172a 30%, #4338ca 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-mode .theme-slider {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .theme-slider:before {
+    background-color: #0f172a;
+}
+
+body.light-mode .card-blur {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .update-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode #search-input,
+body.light-mode #sort-select {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #0f172a;
+}
+
+body.light-mode #search-input:focus,
+body.light-mode #sort-select:focus {
+    border-color: var(--accent-blue);
+}
+
+body.light-mode .card-body-content code {
+    background: rgba(0, 0, 0, 0.04);
+    color: #0f172a;
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .card-btn {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .card-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .floating-selection-bar {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(124, 58, 237, 0.35);
+    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.15), 0 0 30px rgba(124, 58, 237, 0.08);
+}
+
+body.light-mode .selection-text {
+    color: #0f172a;
+}
+
+body.light-mode .btn-secondary {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #0f172a;
+}
+
+body.light-mode .btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Light Mode Mock Tweet Card Overrides */
+body.light-mode .mock-tweet-card {
+    background: #ffffff;
+    border-color: #e1e8ed;
+}
+
+body.light-mode .tweet-display-name {
+    color: #0f172a;
+}
+
+body.light-mode .tweet-username {
+    color: #657786;
+}
+
+body.light-mode #tweet-textarea {
+    color: #0f172a;
+}
+
+body.light-mode .hashtag-helper,
+body.light-mode .tweet-footer {
+    border-color: #e1e8ed;
+}
+
+body.light-mode .tag-pill {
+    background: rgba(29, 161, 242, 0.06);
+    border-color: rgba(29, 161, 242, 0.15);
+}
+
+body.light-mode .tag-pill:hover {
+    background: rgba(29, 161, 242, 0.12);
+}
+
+body.light-mode .toast-notification {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}

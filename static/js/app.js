@@ -38,8 +38,13 @@ const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
 const toastIcon = document.getElementById('toast-icon');
 
+// Theme Switch Elements
+const themeCheckbox = document.getElementById('theme-checkbox');
+const themeLabel = document.querySelector('.theme-label');
+
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
+    initializeTheme();
     fetchReleases();
     setupEventListeners();
 });
@@ -104,6 +109,11 @@ function setupEventListeners() {
 
     // Tweet character counter
     tweetTextarea.addEventListener('input', updateCharCounter);
+
+    // Theme Switch Toggle
+    if (themeCheckbox) {
+        themeCheckbox.addEventListener('change', toggleTheme);
+    }
 
     // Action buttons inside composer
     copyTweetBtn.addEventListener('click', copyTweetToClipboard);
@@ -743,4 +753,39 @@ function showToast(type, message) {
     toastTimeout = setTimeout(() => {
         toast.classList.remove('visible');
     }, 3500);
+}
+
+// Theme switch handler
+function toggleTheme(e) {
+    if (e.target.checked) {
+        document.body.classList.add('light-mode');
+        if (themeLabel) {
+            themeLabel.innerHTML = '<i class="fa-solid fa-sun"></i> Light Mode';
+        }
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.body.classList.remove('light-mode');
+        if (themeLabel) {
+            themeLabel.innerHTML = '<i class="fa-solid fa-moon"></i> Dark Mode';
+        }
+        localStorage.setItem('theme', 'dark');
+    }
+}
+
+// Theme initialization
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        if (themeCheckbox) themeCheckbox.checked = true;
+        document.body.classList.add('light-mode');
+        if (themeLabel) {
+            themeLabel.innerHTML = '<i class="fa-solid fa-sun"></i> Light Mode';
+        }
+    } else {
+        if (themeCheckbox) themeCheckbox.checked = false;
+        document.body.classList.remove('light-mode');
+        if (themeLabel) {
+            themeLabel.innerHTML = '<i class="fa-solid fa-moon"></i> Dark Mode';
+        }
+    }
 }
