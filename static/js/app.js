@@ -16,6 +16,7 @@ const filterPills = document.getElementById('filter-pills');
 const releasesGrid = document.getElementById('releases-grid');
 const emptyState = document.getElementById('empty-state');
 const feedStatus = document.getElementById('feed-status');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 
 // Floating Selection Bar Elements
 const floatingBar = document.getElementById('floating-bar');
@@ -47,6 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupEventListeners() {
     // Refresh action
     refreshBtn.addEventListener('click', fetchReleases);
+
+    // Export to CSV action
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', exportToCSV);
+    }
 
     // Search query input handling
     searchInput.addEventListener('input', (e) => {
@@ -350,16 +356,10 @@ function sortParsedUpdates() {
     });
 }
 
-// Render filtered and sorted updates into releases grid
-function renderUpdates() {
-    sortParsedUpdates();
-    
-    // Filter logic
-    let filtered = parsedUpdates.filter(update => {
-        // Filter by category
+// Get currently filtered releases based on search query and category filters
+function getFilteredUpdates() {
+    return parsedUpdates.filter(update => {
         const matchesFilter = (activeFilter === 'all' || update.type === activeFilter);
-        
-        // Filter by search query
         const matchesSearch = !searchQuery || 
             update.type.toLowerCase().includes(searchQuery) ||
             update.date.toLowerCase().includes(searchQuery) ||
@@ -367,6 +367,13 @@ function renderUpdates() {
             
         return matchesFilter && matchesSearch;
     });
+}
+
+// Render filtered and sorted updates into releases grid
+function renderUpdates() {
+    sortParsedUpdates();
+    
+    let filtered = getFilteredUpdates();
     
     // Clear grid
     releasesGrid.innerHTML = '';
@@ -409,6 +416,9 @@ function renderUpdates() {
                 <a href="${update.link}" target="_blank" class="card-btn" onclick="event.stopPropagation();" title="View official release documentation">
                     <i class="fa-solid fa-up-right-from-square"></i> Docs
                 </a>
+                <button class="card-btn card-copy-btn" title="Copy text content to clipboard">
+                    <i class="fa-regular fa-copy"></i> Copy
+                </button>
                 <button class="card-btn card-tweet-btn" title="Compose a Tweet about this update">
                     <i class="fa-brands fa-x-twitter"></i> Tweet
                 </button>
@@ -422,16 +432,17 @@ function renderUpdates() {
                 return;
             }
             
-            // Check if user clicked the Tweet button inside card
-            if (e.target.closest('.card-tweet-btn')) {
-                openComposerForSingle(update);
-                return;
-            }
-            
             toggleUpdateSelection(update.id);
         });
         
-        // Double check tweet button inside card click event specifically
+        // Copy button inside card click event
+        const copyBtn = card.querySelector('.card-copy-btn');
+        copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            copyTextToClipboard(update.contentText, 'Release note copied to clipboard!');
+        });
+        
+        // Tweet button inside card click event
         const tweetBtn = card.querySelector('.card-tweet-btn');
         tweetBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -608,15 +619,71 @@ function insertHashtag(tag) {
     showToast('success', `Added ${tag}`);
 }
 
-// Copy Tweet Text to Clipboard
-async function copyTweetToClipboard() {
-    const text = tweetTextarea.value;
+// Copy Text to Clipboard general utility
+async function copyTextToClipboard(text, successMsg = 'Text copied to clipboard!') {
     try {
         await navigator.clipboard.writeText(text);
-        showToast('success', 'Tweet copied to clipboard!');
+        showToast('success', successMsg);
     } catch (err) {
         console.error('Failed to copy text: ', err);
         showToast('error', 'Could not copy to clipboard.');
+    }
+}
+
+// Copy Tweet Text to Clipboard
+function copyTweetToClipboard() {
+    copyTextToClipboard(tweetTextarea.value, 'Tweet copied to clipboard!');
+}
+
+// Export releases to CSV
+function exportToCSV() {
+    // If updates are selected, export only selected ones, otherwise export currently filtered ones
+    const updatesToExport = selectedUpdates.length > 0
+        ? parsedUpdates.filter(u => selectedUpdates.includes(u.id))
+        : getFilteredUpdates();
+        
+    if (updatesToExport.length === 0) {
+        showToast('error', 'No releases available to export.');
+        return;
+    }
+    
+    const headers = ['Date', 'Category', 'Content', 'Documentation Link'];
+    const csvRows = [headers.map(h => `"${h}"`).join(',')];
+    
+    updatesToExport.forEach(up => {
+        const row = [
+            up.date,
+            up.type,
+            up.contentText,
+            up.link
+        ];
+        csvRows.push(row.map(val => `"${val.replace(/"/g, '""')}"`).join(','));
+    });
+    
+    const csvContent = csvRows.join('\n');
+    
+    try {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        
+        // Date timestamp for file name
+        const timestamp = new Date().toISOString().split('T')[0];
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', `bigquery_release_notes_${timestamp}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        const count = updatesToExport.length;
+        const targetStr = selectedUpdates.length > 0 ? 'selected' : 'filtered';
+        showToast('success', `Exported ${count} ${targetStr} updates to CSV!`);
+    } catch (err) {
+        console.error('CSV export failed:', err);
+        showToast('error', 'Failed to export CSV file.');
     }
 }
 
